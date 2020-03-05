@@ -1,5 +1,4 @@
-import argparse
-
+import argparse, random
 class Node:
 	def __init__(self,pattern,gfunc,move='start'):
 		self.pattern = pattern
@@ -177,27 +176,39 @@ class Game:
 
 		return
 
+def swap (list, position_a, position_b):
+    list[position_a], list[position_b] = list[position_b], list[position_a]
+
+def samples(goal, size):
+    inputs = []
+    for i in range(0, 100):
+        new_puzzle = goal.copy()
+        for j in range(0, random.randrange(1, 30)):
+            move(new_puzzle, random.randrange(4), size, new_puzzle.index(0))
+        inputs.append(new_puzzle)
+    return inputs
+
+
+def move(list, move_number, size, position):
+    if position % size != 0 and move_number == 0:
+        swap(list, position, position - 1)
+    if position % size != size - 1 and move_number == 1:
+        swap(list, position, position + 1)
+    if position > size - 1 and move_number == 2:
+        swap(list, position, position - size)
+    if position < (len(list) - size) and move_number == 3 :
+        swap(list, position, position + size)
 
 if __name__ == '__main__':
-
-	parser = argparse.ArgumentParser()
-	parser.add_argument("--startrow",help='Enter the numbers in sequence for starting arangement starting from row 1 to row 3 space separated (put 0 for blank area).',type=int, nargs=9, metavar=('row1col1', 'row1col2', 'row1col3','row2col1','row2col2','row2col3','row3col1','row3col2','row3col3'), required=True)
-	parser.add_argument("--goalrow",help='Enter the numbers in sequence for goal arangement starting from row 1 to row 3 space sepearted (put 0 for blank area).',type=int, nargs=9, metavar=('row1col1','row1col2','row1col3','row2col1','row2col2','row2col3','row3col1','row3col2','row3col3'), required=True)
-
-	args = parser.parse_args()
-
-	x = [1,2,3,4,5,6,7,8,0]
-
-	startloc = [args.startrow[0:3],args.startrow[3:6],args.startrow[6:]]
-	goalloc = [args.goalrow[0:3],args.goalrow[3:6],args.goalrow[6:]]
-
-	#----- Initalize start and end node -----#
-
-	start = Node(startloc,0)
-	goal = Node(goalloc,0,'goal')
-
-	#----- Initilaize Game -----#
-
-	game = Game(start, goal)
-
-	game.solve() #Solve Game
+	x = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+	inputs = samples(x, 3)
+	for i in inputs:
+		startloc = [i[0:3],i[3:6],i[6:]]
+		print("---------Starting state:--------------")
+		print(startloc)
+		goalloc = [x[0:3],x[3:6],x[6:]]
+		start = Node(startloc,0)
+		goal = Node(goalloc,0,'goal')
+		game = Game(start, goal)
+		game.solve() #Solve Game
+		print("-----------FINISHED!------------")
